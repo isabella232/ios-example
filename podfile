@@ -1,0 +1,5 @@
+platform :ios, '7.0'
+
+target 'iOSExample' do
+   pod 'apptentive-ios', '~> 3.2'
+end
