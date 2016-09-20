@@ -1,3 +1,19 @@
-# Apptentive iOS Example
+Apptentive Example App
+-----------------------
 
-Example of a basic integration of an app with the Apptentive iOS SDK
+This app is intended as an example of how you might integrate a real-world app with the Apptentive SDK.
+
+Features
+========
+
+This app shows an example of the how to use Apptentive SDK's classes and methods in an app:
+
+- Setting the API Key
+- Engaging events
+- Launching message center
+- Showing the unread message count
+
+Credits
+=======
+
+Photos courtesy of [https://unsplash.it](https://unsplash.it).
