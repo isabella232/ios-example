@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Apptentive
 
 class FavoritesViewController: PicturesViewController {
     @IBOutlet var noFavoritesLabel: UILabel!
@@ -42,6 +43,8 @@ class FavoritesViewController: PicturesViewController {
 			if let indexPath = self.collectionView?.indexPath(for: cell) {
 				// Will always mean "unlike" in favorites-only view
 				sender.isSelected = false
+
+				Apptentive.shared.engage(event: "photo_unliked", withCustomData: ["photo_name": self.source.imageNameAtIndex(indexPath.item)], from: self)
 
 				self.source?.setLiked((indexPath as NSIndexPath).item, liked: false)
 

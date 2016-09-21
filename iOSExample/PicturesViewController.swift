@@ -8,6 +8,7 @@
 
 import UIKit
 import QuickLook
+import Apptentive
 
 class PicturesViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 	let reuseIdentifier = "Picture"
@@ -92,6 +93,8 @@ class PicturesViewController: UICollectionViewController, UICollectionViewDelega
 		previewController.currentPreviewItemIndex = (indexPath as NSIndexPath).item
 		
 		self.navigationController?.pushViewController(previewController, animated: true)
+		
+		Apptentive.shared.engage(event: "photo_viewed", withCustomData: ["photo_name": self.source.imageNameAtIndex(indexPath.item)], from: previewController)
 	}
 	
 	@IBAction func toggleLike(_ sender: UIButton) {
@@ -101,6 +104,12 @@ class PicturesViewController: UICollectionViewController, UICollectionViewDelega
 		self.source?.setLiked(index, liked: sender.isSelected)
 		
 		self.collectionView!.reloadItems(at: [IndexPath(item: index, section: 0)])
+		
+		if (sender.isSelected) {
+			Apptentive.shared.engage(event: "photo_liked", withCustomData: ["photo_name": self.source.imageNameAtIndex(index)], from: self)
+		} else {
+			Apptentive.shared.engage(event: "photo_unliked", withCustomData: ["photo_name": self.source.imageNameAtIndex(index)], from: self)
+		}
 	}
 }
 
