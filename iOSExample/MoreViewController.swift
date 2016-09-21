@@ -7,6 +7,18 @@
 //
 
 import UIKit
+import Apptentive
 
 class MoreViewController: UITableViewController {
+	@IBOutlet var messageCenterCell: UITableViewCell!
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		self.messageCenterCell.accessoryView = Apptentive.shared.unreadMessageCountAccessoryView(apptentiveHeart: true)
+	}
+		
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		Apptentive.shared.presentMessageCenter(from: self)
+	}
 }
