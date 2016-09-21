@@ -8,6 +8,7 @@
 
 import UIKit
 import Apptentive
+import Crashlytics
 
 class MoreViewController: UITableViewController {
 	@IBOutlet var messageCenterCell: UITableViewCell!
@@ -19,6 +20,10 @@ class MoreViewController: UITableViewController {
 	}
 		
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		Apptentive.shared.presentMessageCenter(from: self)
+		if indexPath.section == 0 {
+			Apptentive.shared.presentMessageCenter(from: self)
+		} else {
+			Crashlytics.sharedInstance().crash()
+		}
 	}
 }

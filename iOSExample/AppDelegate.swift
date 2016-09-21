@@ -8,20 +8,26 @@
 
 import UIKit
 import Apptentive
+import Fabric
+import Crashlytics
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegate, CrashlyticsDelegate {
 
 	var window: UIWindow?
+	var didDetectCrash = false
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-		Apptentive.shared.apiKey = "edbf34735084c94fe345baaa93a408c655132984bde1a8fe75ddd15b79b771a3"
+		Apptentive.shared.apiKey = "<#Your Apptentive API Key#>"
 
-		precondition(Apptentive.shared.apiKey != "<Your Apptentive API Key>", "Please set your Apptentive API key above")
+		precondition(Apptentive.shared.apiKey != "<#Your Apptentive API Key#>", "Please set your Apptentive API key above")
 
 		if let tabBarController = self.window?.rootViewController as? UITabBarController {
 			tabBarController.delegate = self
 		}
+
+		Crashlytics.sharedInstance().delegate = self
+		Fabric.with([Crashlytics.self])
 
 		return true
 	}
@@ -33,6 +39,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
 		} else {
 			Apptentive.shared.engage(event: "favorites_tab_selected", from: tabBarController)
 		}
+	}
+
+	func applicationDidBecomeActive(_ application: UIApplication) {
+		if (didDetectCrash) {
+			// Use the default view-controller-crawling behavior to find active VC
+			Apptentive.shared.engage(event: "did_crash", from: nil)
+			didDetectCrash = false
+		}
+	}
+
+	func crashlyticsDidDetectReport(forLastExecution report: CLSReport, completionHandler: @escaping (Bool) -> Void) {
+		didDetectCrash = true
+
+		completionHandler(true)
 	}
 }
 

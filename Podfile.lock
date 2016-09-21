@@ -1,12 +1,19 @@
 PODS:
   - apptentive-ios (3.3.0)
+  - Crashlytics (3.8.1):
+    - Fabric (~> 1.6.3)
+  - Fabric (1.6.8)
 
 DEPENDENCIES:
   - apptentive-ios (~> 3)
+  - Crashlytics
+  - Fabric
 
 SPEC CHECKSUMS:
   apptentive-ios: c4b6718d71991f4202049b49b817b2adb52e436c
+  Crashlytics: 4391d8df0b125345e9f209c5db6e7f40a6a8435d
+  Fabric: 5755268d0171435ab167e3d0878a28a777deaf10
 
-PODFILE CHECKSUM: ddaf1d6aa16efba8866f887867c6cf2c02aeb660
+PODFILE CHECKSUM: 4bb990846c93b38a6aa2d3bcb552857c62941248
 
 COCOAPODS: 1.0.1

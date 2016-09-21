@@ -319,6 +319,8 @@
 		<dict>
 			<key>children</key>
 			<array>
+				<string>01FDD8181D930E8A00F08D62</string>
+				<string>01FDD8191D930E8A00F08D62</string>
 				<string>01045DED1CFF56E200355633</string>
 				<string>014E033C1B7401A50059A3C6</string>
 				<string>0118C22E1B754945009D6C4B</string>
@@ -434,6 +436,7 @@
 			<array>
 				<string>0116DA191BA37FA800E50BC3</string>
 				<string>0116DA1A1BA37FA800E50BC3</string>
+				<string>01FDD81B1D930E8A00F08D62</string>
 				<string>0116DA1B1BA37FA800E50BC3</string>
 				<string>0116DA1C1BA37FA800E50BC3</string>
 				<string>0116DA1D1BA37FA800E50BC3</string>
@@ -442,6 +445,7 @@
 				<string>0116DA201BA37FA800E50BC3</string>
 				<string>0116DA221BA37FA800E50BC3</string>
 				<string>0116DA231BA37FA800E50BC3</string>
+				<string>01FDD81A1D930E8A00F08D62</string>
 			</array>
 			<key>isa</key>
 			<string>PBXFrameworksBuildPhase</string>
@@ -473,6 +477,7 @@
 				<string>014E03361B7401A50059A3C6</string>
 				<string>014E03371B7401A50059A3C6</string>
 				<string>014E03381B7401A50059A3C6</string>
+				<string>01FDD81C1D9313A500F08D62</string>
 			</array>
 			<key>buildRules</key>
 			<array/>
@@ -794,6 +799,11 @@
 				<string>AppIcon</string>
 				<key>DEVELOPMENT_TEAM</key>
 				<string>86WML2UN43</string>
+				<key>FRAMEWORK_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>$(PROJECT_DIR)</string>
+				</array>
 				<key>INFOPLIST_FILE</key>
 				<string>iOSExample/Info.plist</string>
 				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
@@ -822,6 +832,11 @@
 				<string>AppIcon</string>
 				<key>DEVELOPMENT_TEAM</key>
 				<string>86WML2UN43</string>
+				<key>FRAMEWORK_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>$(PROJECT_DIR)</string>
+				</array>
 				<key>INFOPLIST_FILE</key>
 				<string>iOSExample/Info.plist</string>
 				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
@@ -961,6 +976,61 @@
 			<string>0160856B1BA7924D00050FDB</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>01FDD8181D930E8A00F08D62</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>wrapper.framework</string>
+			<key>path</key>
+			<string>Fabric.framework</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>01FDD8191D930E8A00F08D62</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>wrapper.framework</string>
+			<key>path</key>
+			<string>Crashlytics.framework</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>01FDD81A1D930E8A00F08D62</key>
+		<dict>
+			<key>fileRef</key>
+			<string>01FDD8181D930E8A00F08D62</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>01FDD81B1D930E8A00F08D62</key>
+		<dict>
+			<key>fileRef</key>
+			<string>01FDD8191D930E8A00F08D62</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>01FDD81C1D9313A500F08D62</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array/>
+			<key>inputPaths</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXShellScriptBuildPhase</string>
+			<key>outputPaths</key>
+			<array/>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+			<key>shellPath</key>
+			<string>/bin/sh</string>
+			<key>shellScript</key>
+			<string>"#{PODS_ROOT/Fabric/run" &lt;Your Fabric API Key&gt;</string>
 		</dict>
 		<key>4956825534C86BCBBC09618E</key>
 		<dict>

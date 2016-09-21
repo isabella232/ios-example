@@ -3,4 +3,6 @@ use_frameworks!
 
 target 'iOSExample' do
        pod 'apptentive-ios', '~> 3'
+       pod 'Fabric'
+       pod 'Crashlytics'
 end
