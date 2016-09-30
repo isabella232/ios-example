@@ -797,7 +797,7 @@
 				<key>INFOPLIST_FILE</key>
 				<string>iOSExample/Info.plist</string>
 				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>8.0</string>
+				<string>9.0</string>
 				<key>LD_RUNPATH_SEARCH_PATHS</key>
 				<string>$(inherited) @executable_path/Frameworks</string>
 				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
@@ -825,7 +825,7 @@
 				<key>INFOPLIST_FILE</key>
 				<string>iOSExample/Info.plist</string>
 				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>8.0</string>
+				<string>9.0</string>
 				<key>LD_RUNPATH_SEARCH_PATHS</key>
 				<string>$(inherited) @executable_path/Frameworks</string>
 				<key>PRODUCT_BUNDLE_IDENTIFIER</key>

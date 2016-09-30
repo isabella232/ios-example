@@ -7,10 +7,11 @@
 //
 
 import UIKit
-import QuickLook
+import Alamofire
+import AlamofireImage
 
 class PictureManager {
-	static let sharedManager = PictureManager()
+	static let shared = PictureManager()
 	
 	var pictures = [Picture]()
 	
@@ -18,35 +19,21 @@ class PictureManager {
 	var pictureDataSource: PictureDataSource
 	
 	init() {
-		if let picturesFolderPath = Bundle.main.path(forResource: "Pictures", ofType: nil) {
-			let enumerator = FileManager.default.enumerator(atPath: picturesFolderPath)
-			
-			while let element = enumerator?.nextObject() as? String {
-				let pictureURL = URL(fileURLWithPath: NSString(string: picturesFolderPath).appendingPathComponent(element as String))
-				let randomLikeCount = Int(arc4random_uniform(1000))
-				pictures.append(Picture(URL: pictureURL as URL, likeCount: randomLikeCount))
+		self.pictureDataSource = PictureDataSource(pictures: [])
+		self.favoriteDataSource = PictureDataSource(pictures: [])
+
+		Alamofire.request("https://unsplash.it/list").responseJSON { response in
+			if let JSON = response.result.value as? [[String: Any]] {
+				self.pictureDataSource.pictures = JSON[0...30].flatMap {
+					Picture(json: $0)
+				}
 			}
 		}
-		
-		self.pictureDataSource = PictureDataSource(pictures: self.pictures)
-		self.favoriteDataSource = PictureDataSource(pictures: [])
-		
+
 		self.pictureDataSource.manager = self
 		self.favoriteDataSource.manager = self
 	}
-	
-	func reset() {
-		self.favoriteDataSource.pictures = []
-		self.assignRandomLikes()
-		self.pictureDataSource.pictures = self.pictures.shuffled()
-	}
-	
-	fileprivate func assignRandomLikes() {
-		self.pictures.forEach { (picture) in
-			picture.likeCount =  Int(arc4random_uniform(1000))
-		}
-	}
-	
+
 	fileprivate func indexOfFavorite(_ picture: Picture) -> Int? {
 		return self.favoriteDataSource.pictures.index(of: picture)
 	}
@@ -57,24 +44,33 @@ class PictureManager {
 	
 	func addFavorite(_ picture: Picture) {
 		if !self.isFavorite(picture) {
-			picture.likeCount += 1
-			
 			self.favoriteDataSource.pictures.append(picture)
+			self.favoriteDataSource.delegate?.pictureDataSourceDidUpdate(self.favoriteDataSource)
+			self.pictureDataSource.delegate?.pictureDataSourceDidUpdate(self.favoriteDataSource)
 		}
 	}
 	
 	func removeFavorite(_ picture: Picture) {
 		if let index = self.indexOfFavorite(picture) {
-			picture.likeCount -= 1
-			
 			self.favoriteDataSource.pictures.remove(at: index)
+			self.favoriteDataSource.delegate?.pictureDataSourceDidUpdate(self.favoriteDataSource)
+			self.pictureDataSource.delegate?.pictureDataSourceDidUpdate(self.favoriteDataSource)
 		}
 	}
 }
 
+protocol PictureDataSourceDelegate: class {
+	func pictureDataSourceDidUpdate(_: PictureDataSource)
+}
+
 class PictureDataSource {
-	var pictures: [Picture]
+	var pictures: [Picture] {
+		didSet {
+			self.delegate?.pictureDataSourceDidUpdate(self)
+		}
+	}
 	weak var manager: PictureManager?
+	weak var delegate: PictureDataSourceDelegate?
 	
 	init(pictures: [Picture]) {
 		self.pictures = pictures
@@ -84,8 +80,11 @@ class PictureDataSource {
 		return self.pictures.count
 	}
 	
-	func likeCountAtIndex(_ index: Int) -> Int {
-		return self.pictures[index].likeCount
+	func imageURLAtIndex(_ index: Int, at size: CGSize) -> URL {
+		let width = size.width * UIScreen.main.scale
+		let height = size.height * UIScreen.main.scale
+
+		return URL(string: "\(width)/\(height)?image=\(self.pictures[index].id)", relativeTo: URL(string: "https://unsplash.it/"))!
 	}
 	
 	func imageAtIndex(_ index: Int) -> UIImage? {
@@ -97,7 +96,7 @@ class PictureDataSource {
 	}
 	
 	func imageNameAtIndex(_ index: Int) -> String {
-		return pictures[index].URL.deletingPathExtension().lastPathComponent
+		return pictures[index].filename ?? ""
 	}
 	
 	func isLikedAtIndex(_ index: Int) -> Bool {
@@ -110,16 +109,6 @@ class PictureDataSource {
 		} else if !liked {
 			self.manager!.removeFavorite(self.pictures[index])
 		}
-	}
-}
-
-extension PictureDataSource: QLPreviewControllerDataSource {
-	@objc func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-		return self.numberOfPictures()
-	}
-	
-	@objc func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-		return self.pictures[index]
 	}
 }
 
