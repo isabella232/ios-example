@@ -9,11 +9,14 @@
 import UIKit
 import QuickLook
 
-class PicturesViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class PicturesViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PictureDataSourceDelegate {
+	@IBOutlet var emptyLabel: UILabel!
+	var imageSize = CGSize.zero
 	let reuseIdentifier = "Picture"
 	var manager: PictureManager! {
 		didSet {
 			self.configure()
+			self.source.delegate = self
 		}
 	}
 	
@@ -23,20 +26,29 @@ class PicturesViewController: UICollectionViewController, UICollectionViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
 
-		manager = PictureManager.sharedManager
+		manager = PictureManager.shared
+
+		self.collectionView!.backgroundView = self.emptyLabel
+
+		self.updateEmpty(false)
 	}
 
 	func configure() {
 		self.source = manager.pictureDataSource
 	}
 
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		
-		self.collectionView?.reloadData()
-	}
-	
-	override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		if let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout, let collectionView = collectionView {
+			let insetWidth = flowLayout.sectionInset.left + flowLayout.sectionInset.right
+
+			let effectiveWidth = collectionView.bounds.width - insetWidth
+			let spacing = flowLayout.minimumInteritemSpacing
+			let columns = floor((effectiveWidth + spacing) / (self.minimumWidth + spacing))
+			let size = ((effectiveWidth + spacing) / columns) - spacing
+
+			imageSize = CGSize(width: size, height: size)
+		}
+
 		self.collectionViewLayout.invalidateLayout()
 	}
 
@@ -52,48 +64,25 @@ class PicturesViewController: UICollectionViewController, UICollectionViewDelega
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PictureCell
-		
-		cell.imageView.image = self.source.imageAtIndex((indexPath as NSIndexPath).item)
-		cell.likesLabel.text = "\(self.source.likeCountAtIndex((indexPath as NSIndexPath).item)) Likes"
+
+		cell.imageView.image = nil
+		cell.imageView.af_setImage(withURL: self.source.imageURLAtIndex(indexPath.item, at: imageSize))
 		cell.likeButton.tag = (indexPath as NSIndexPath).item
-		cell.likeButton.isSelected = self.source.isLikedAtIndex((indexPath as NSIndexPath).item) 
+		cell.likeButton.isSelected = self.source.isLikedAtIndex(indexPath.item)
 		
         return cell
     }
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		if (indexPath as NSIndexPath).item > self.source.numberOfPictures() {
-			return CGSize.zero;
-		}
-		
-		if let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout {
-			let insetWidth = flowLayout.sectionInset.left + flowLayout.sectionInset.right
-			
-			let effectiveWidth = collectionView.bounds.width - insetWidth
-			let spacing = flowLayout.minimumInteritemSpacing
-			
-			let columns = floor((effectiveWidth + spacing) / (self.minimumWidth + spacing))
-			
-			let width = ((effectiveWidth + spacing) / columns) - spacing
-			let imageSize = self.source.imageSizeAtIndex((indexPath as NSIndexPath).item)
-			let factor = imageSize.width / imageSize.height
-			let height = width / factor
-			
-			return CGSize(width: width, height: height + 44)
-		}
-		
-		return CGSize.zero
+		return imageSize
 	}
-	
-	override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		let previewController = QLPreviewController()
-		previewController.dataSource = self.source
-		previewController.hidesBottomBarWhenPushed = true
-		previewController.currentPreviewItemIndex = (indexPath as NSIndexPath).item
-		
-		self.navigationController?.pushViewController(previewController, animated: true)
+
+	// Picture Data Source Delegate
+	func pictureDataSourceDidUpdate(_: PictureDataSource) {
+		self.collectionView?.reloadSections(IndexSet(integer: 0))
+		self.updateEmpty(true)
 	}
-	
+		
 	@IBAction func toggleLike(_ sender: UIButton) {
 		sender.isSelected = !sender.isSelected
 		let index = sender.tag
@@ -101,6 +90,15 @@ class PicturesViewController: UICollectionViewController, UICollectionViewDelega
 		self.source?.setLiked(index, liked: sender.isSelected)
 		
 		self.collectionView!.reloadItems(at: [IndexPath(item: index, section: 0)])
+	}
+
+	func updateEmpty(_ animated: Bool) {
+		let alpha: CGFloat = self.source.numberOfPictures() == 0 ? 1.0 : 0.0
+		let duration = animated ? 0.1 : 0.0
+
+		UIView.animate(withDuration: duration) { () -> Void in
+			self.emptyLabel.alpha = alpha
+		}
 	}
 }
 
